@@ -1,0 +1,7 @@
+.idea
+proto_gen
+node_modules
+coverage
+
+.env
+error.log
