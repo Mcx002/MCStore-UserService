@@ -26,4 +26,18 @@ export class UserServer extends BaseServer {
             callback(err, null)
         }
     }
+
+    createUser = async (call: ServerUnaryCall<UserDto, UserDto>, callback: sendUnaryData<UserDto>) => {
+        try {
+            const req = call.request
+
+            const user = await this.userService.create(req)
+
+            callback(null, user)
+        } catch (e: unknown) {
+            const err = e as ServerErrorResponse
+            logger.info(err)
+            callback(err, null)
+        }
+    }
 }
