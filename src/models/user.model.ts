@@ -1,30 +1,32 @@
-import { DataTypes, Model, Sequelize } from "sequelize"
+import { DataTypes, Model, Optional, Sequelize } from "sequelize"
+import { UserDto } from "../../proto_gen/user_pb"
+import { v4 as uuidv4 } from "uuid"
 
 export interface UserAttributes {
-    id: number
-    xid: string
+    id: string
     createdAt: Date
     updatedAt: Date
     firstName: string
-    lastName: string
+    lastName?: string
     email: string
     birthday: Date
-    gender: string
+    gender: UserDto.Gender
     phone: string
     address: string
     version: number
 }
 
+export type UserCreationAttributes = Optional<UserAttributes, "id">
+
 export class User extends Model implements UserAttributes {
-    id!: number
-    xid!: string
+    id!: string
     createdAt!: Date
     updatedAt!: Date
     firstName!: string
-    lastName!: string
+    lastName?: string
     email!: string
     birthday!: Date
-    gender!: string
+    gender!: UserDto.Gender
     phone!: string
     address!: string
     version!: number
@@ -32,15 +34,10 @@ export class User extends Model implements UserAttributes {
     static initModel(sequelize: Sequelize): void {
         User.init({
             id: {
-                type: DataTypes.SMALLINT,
+                type: DataTypes.UUID,
                 allowNull: false,
                 primaryKey: true,
-                autoIncrement: true,
-            },
-            xid: {
-                type: DataTypes.STRING(4),
-                allowNull: false,
-                unique: true,
+                defaultValue: uuidv4()
             },
             firstName: {
                 type: DataTypes.STRING(20),
@@ -52,7 +49,8 @@ export class User extends Model implements UserAttributes {
             },
             email: {
                 type: DataTypes.STRING(255),
-                allowNull: false
+                allowNull: false,
+                unique: true,
             },
             birthday: {
                 type: DataTypes.DATE,
