@@ -10,18 +10,22 @@ import { Status } from "@grpc/grpc-js/build/src/constants"
 
 async function main() {
     try {
+        // load configuration
         loadEnvFile()
 
         const port = appConfig.port || 3000
         const uri = `localhost:${port}`
 
+        // init db
         const dbModel = new DatabaseModels()
         await dbModel.init()
 
+        // init app
         const app = new App()
         app.service.init(app)
         app.server.init(app)
 
+        // run server
         app.server.bindAsync(uri, ServerCredentials.createInsecure(), (error, _) => {
             app.server.start()
 
@@ -33,14 +37,14 @@ async function main() {
             }
         })
 
-    } catch(e) {
+    } catch (e) {
+        // throw unexpected error
         const err = e as Error
         logger.error(err.message)
-        throw new ErrorHandler(Status.UNKNOWN, "internal error")
+        throw new ErrorHandler(Status.UNKNOWN, "Internal error")
     }
 }
 
-main().catch(e => {
-    const err = e as Error
-    logger.error(err.message)
+main().catch((e: ErrorHandler) => {
+    logger.error(e.message)
 })

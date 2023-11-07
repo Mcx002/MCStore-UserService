@@ -15,6 +15,7 @@ export class UserService extends BaseService {
     }
 
     getUser = async (xid: string): Promise<UserDto> => {
+        // find user
         const user = await this.userRep.findUserByXid(xid)
         if (!user) {
             throw new ErrorHandler(Status.INVALID_ARGUMENT, "User is not found")

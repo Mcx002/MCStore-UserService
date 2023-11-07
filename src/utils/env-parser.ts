@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv'
-import {Status} from "@grpc/grpc-js/build/src/constants";
-import {ErrorHandler} from "../adapter/error.adapter";
+import { Status } from "@grpc/grpc-js/build/src/constants";
+import { ErrorHandler } from "../adapter/error.adapter";
 
 export const isNodeEnvTest = process.env.NODE_ENV === 'test'
 
@@ -13,6 +13,7 @@ export const loadEnvFile = () => {
 }
 
 export function validateDefaultValue<T>(variableName: string, defaultValue: T | undefined): T {
+    // check default value is not provided
     if (!defaultValue) {
         throw new ErrorHandler(Status.INTERNAL, `${variableName} is not set yet`)
     }
@@ -26,7 +27,10 @@ export const getEnvNumber = (variableName: string, defaultValue: number | undefi
         return validateDefaultValue(variableName, defaultValue)
     }
 
+    // parse string env to int
     const dataNumber = parseInt(data)
+
+    // return default value if NaN
     if (Number.isNaN(dataNumber)) {
         return validateDefaultValue(variableName, defaultValue)
     }
@@ -49,6 +53,7 @@ export const getEnvString = (variableName: string, defaultValue: string | undefi
 export const getEnvBoolean = (variableName: string, defaultValue: boolean | undefined = undefined): boolean => {
     const data = process.env[variableName]
 
+    // convert to bool
     if (data && data.toLowerCase() === 'true') {
         return true
     }
