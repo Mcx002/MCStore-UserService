@@ -1,8 +1,16 @@
-import { User, UserAttributes } from "../models/user.model"
+import { User, UserAttributes, UserCreationAttributes } from "../models/user.model"
 
 export class UserRepository {
-    findUserByXid = (xid: string): Promise<UserAttributes | null> => {
-        return User.findOne({ where: { xid } })
+    findUserById = (id: string): Promise<UserAttributes | null> => {
+        return User.findOne({ where: { id } })
+    }
+
+    insert = (data: UserCreationAttributes): Promise<UserAttributes> => {
+        return User.create(data)
+    }
+
+    findUserByEmail = (email: string): Promise<UserAttributes | null> => {
+        return User.findOne({ where: { email } })
     }
 }
 
