@@ -14,6 +14,7 @@ export interface UserAttributes {
     phone: string
     address: string
     version: number
+    photoProfile?: string
 }
 
 export type UserCreationAttributes = Optional<UserAttributes, "id">
@@ -30,6 +31,7 @@ export class User extends Model implements UserAttributes {
     phone!: string
     address!: string
     version!: number
+    photoProfile?: string
 
     static initModel(sequelize: Sequelize): void {
         User.init({
@@ -79,7 +81,11 @@ export class User extends Model implements UserAttributes {
             version: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-            }
+            },
+            photoProfile: {
+                type: DataTypes.STRING(36),
+                allowNull: true,
+            },
         }, {
             sequelize,
             tableName: 'User'
