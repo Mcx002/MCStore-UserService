@@ -5,8 +5,9 @@ import { App } from '../app'
 import { BaseService } from '../interfaces/service.interface'
 import { UserAttributes, UserCreationAttributes } from '../models/user.model'
 import { UserRepository } from '../repositories/user.repository'
-import { getUnixFromDate } from '../utils/time'
+import { getDateFromUnix, getUnixFromDate } from '../utils/time'
 import { FileDto } from '../../proto_gen/filestore_pb'
+import { notEmptyString } from '../utils/value'
 
 export class UserService extends BaseService {
     userRep!: UserRepository
@@ -27,10 +28,7 @@ export class UserService extends BaseService {
 
     create = async (userDto: UserDto): Promise<UserDto> => {
         // check existing email
-        let user = await this.userRep.findUserByEmail(userDto.getEmail())
-        if (user) {
-            throw new ErrorHandler(Status.INVALID_ARGUMENT, "The email has been used")
-        }
+        await this.validateEmailExisted(userDto.getEmail())
 
         // prepare user creation attributes
         const userData: UserCreationAttributes = {
@@ -39,15 +37,16 @@ export class UserService extends BaseService {
             firstName: userDto.getFirstName(),
             lastName: userDto.getLastName(),
             email: userDto.getEmail(),
-            birthday: new Date(userDto.getBirthday()),
+            birthday: getDateFromUnix(userDto.getBirthday()),
             gender: userDto.getGender(),
             phone: userDto.getPhone(),
             address: userDto.getAddress(),
+            photoProfile: userDto.getPhotoProfile()?.getId() ?? undefined,
             version: 1,
         }
 
         // execute
-        user = await this.userRep.insert(userData)
+        const user = await this.userRep.insert(userData)
 
         // compose result
         return this.composeUserDto(user)
@@ -72,5 +71,64 @@ export class UserService extends BaseService {
 
         userDto.setPhotoProfile(fileDto)
         return userDto
+    }
+
+    validateEmailExisted = async (email: string) => {
+        // check existing email
+        const user = await this.userRep.findUserByEmail(email)
+        if (user) {
+            throw new ErrorHandler(Status.INVALID_ARGUMENT, "The email has been used")
+        }
+    }
+
+    update = async (userDto: UserDto): Promise<UserDto> => {
+        // check is updated email existed
+        if (userDto.getEmail() != '') {
+            await this.validateEmailExisted(userDto.getEmail())
+        }
+
+        // check if user is exists
+        const user = await this.userRep.findUserById(userDto.getId())
+        if (!user) {
+            throw new ErrorHandler(Status.INVALID_ARGUMENT, "User is not found")
+        }
+
+        // check version
+        if (userDto.getVersion() !== user.version) {
+            throw new ErrorHandler(Status.INVALID_ARGUMENT, "Version is not valid")
+        }
+
+        // prepare updated user value
+        const updatedValue = {
+            firstName: notEmptyString(userDto.getFirstName()),
+            lastName: notEmptyString(userDto.getLastName()),
+            email: notEmptyString(userDto.getEmail()),
+            birthday: userDto.getBirthday() === 0 ? undefined : getDateFromUnix(userDto.getBirthday()),
+            gender: userDto.getGender() === UserDto.Gender.UNKNOWN ? undefined : userDto.getGender(),
+            phone: notEmptyString(userDto.getPhone()),
+            address: notEmptyString(userDto.getAddress()),
+            photoProfile: userDto.getPhotoProfile()?.getId() ?? undefined,
+            updatedAt: new Date(),
+            version: user.version + 1,
+        }
+
+        // execute
+        const update = await this.userRep.update(userDto.getId(), updatedValue, userDto.getVersion())
+        if (update === 0) {
+            throw new ErrorHandler(Status.INTERNAL, "Update Failed, Please Try Again")
+        }
+
+        user.firstName = updatedValue.firstName ?? user.firstName
+        user.lastName = updatedValue.lastName ?? user.lastName
+        user.email = updatedValue.email ?? user.email
+        user.birthday = updatedValue.birthday ?? user.birthday
+        user.gender = updatedValue.gender ?? user.gender
+        user.phone = updatedValue.phone ?? user.phone
+        user.address = updatedValue.address ?? user.address
+        user.photoProfile = updatedValue.photoProfile ?? user.photoProfile
+        user.updatedAt = updatedValue.updatedAt
+        user.version = updatedValue.version
+
+        return this.composeUserDto(user)
     }
 }
