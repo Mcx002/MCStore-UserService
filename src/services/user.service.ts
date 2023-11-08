@@ -6,6 +6,7 @@ import { BaseService } from '../interfaces/service.interface'
 import { UserAttributes, UserCreationAttributes } from '../models/user.model'
 import { UserRepository } from '../repositories/user.repository'
 import { getUnixFromDate } from '../utils/time'
+import { FileDto } from '../../proto_gen/filestore_pb'
 
 export class UserService extends BaseService {
     userRep!: UserRepository
@@ -65,6 +66,11 @@ export class UserService extends BaseService {
         userDto.setLastName(user.lastName ?? '')
         userDto.setCreatedAt(getUnixFromDate(user.createdAt))
         userDto.setUpdatedAt(getUnixFromDate(user.updatedAt))
+
+        const fileDto = new FileDto()
+        fileDto.setId(user.photoProfile ?? '')
+
+        userDto.setPhotoProfile(fileDto)
         return userDto
     }
 }
