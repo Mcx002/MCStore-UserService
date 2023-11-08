@@ -1,11 +1,10 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize"
 import { UserDto } from "../../proto_gen/user_pb"
 import { v4 as uuidv4 } from "uuid"
+import { BaseAttributes } from "."
 
-export interface UserAttributes {
+export interface UserAttributes extends BaseAttributes {
     id: string
-    createdAt: Date
-    updatedAt: Date
     firstName: string
     lastName?: string
     email: string
@@ -13,7 +12,6 @@ export interface UserAttributes {
     gender: UserDto.Gender
     phone: string
     address: string
-    version: number
     photoProfile?: string
 }
 
