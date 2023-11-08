@@ -20,6 +20,7 @@ export class AppServer extends Server {
 
             getUser: this.userServer.getUser,
             createUser: this.userServer.createUser,
+            updateUser: this.userServer.updateUser,
         })
     }
 }
