@@ -21,7 +21,7 @@ export class CommonServer extends BaseServer {
         }
         catch (e: unknown) {
             const err = e as ServerErrorResponse
-            logger.info(err)
+            logger.error(JSON.stringify(err))
             callback(err, null)
         }
 

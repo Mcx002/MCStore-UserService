@@ -1,13 +1,12 @@
 import * as winston from "winston";
-import {appConfig} from "./config";
+import { appConfig } from "./config";
 
 export const logger = winston.createLogger({
     level: appConfig.loggerLevel,
     format: winston.format.json(),
     defaultMeta: { service: appConfig.serviceName },
     transports: [
-        new winston.transports.File({ filename: 'error.log', level: 'error' }),
-        // new winston.transports.File({ filename: 'combined.log' }),
+        new winston.transports.File({ filename: 'error.log', level: 'warn' }),
     ]
 })
 

@@ -30,21 +30,21 @@ async function main() {
             app.server.start()
 
             serverLifetime.setStartTime(new Date().getTime())
-            logger.info(`Listening on ${uri}`)
+            console.log(`Listening on ${uri}`)
 
             if (error) {
-                logger.error(error.message)
+                logger.error(JSON.stringify(error))
             }
         })
 
     } catch (e) {
         // throw unexpected error
         const err = e as Error
-        logger.error(err.message)
+        logger.error(JSON.stringify(err))
         throw new ErrorHandler(Status.UNKNOWN, "Internal error")
     }
 }
 
 main().catch((e: ErrorHandler) => {
-    logger.error(e.message)
+    logger.error(JSON.stringify(e))
 })

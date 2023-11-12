@@ -22,7 +22,7 @@ export class UserServer extends BaseServer {
             callback(null, user)
         } catch (e: unknown) {
             const err = e as ServerErrorResponse
-            logger.info(err)
+            logger.error(JSON.stringify(err))
             callback(err, null)
         }
     }
@@ -36,7 +36,7 @@ export class UserServer extends BaseServer {
             callback(null, user)
         } catch (e: unknown) {
             const err = e as ServerErrorResponse
-            logger.info(err)
+            logger.error(JSON.stringify(err))
             callback(err, null)
         }
     }
@@ -50,7 +50,7 @@ export class UserServer extends BaseServer {
             callback(null, user)
         } catch (e: unknown) {
             const err = e as ServerErrorResponse
-            logger.info(err)
+            logger.error(JSON.stringify(err))
             callback(err, null)
         }
     }
