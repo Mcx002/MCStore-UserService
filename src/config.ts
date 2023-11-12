@@ -4,6 +4,7 @@ loadEnvFile()
 
 export const appConfig = {
     // Server Configuration
+    host: getEnvString("HOST", "localhost"),
     port: getEnvNumber("PORT", 40000),
     serviceName: getEnvString("SERVICE_NAME", "UserService"),
     serviceVersion: getEnvString("SERVICE_VERSION", "v0.0.1"),
@@ -36,13 +37,6 @@ export const appConfig = {
 
     // Logger
     loggerLevel: getEnvString('LOGGER_LEVEL', "error"),
-
-    // mail
-    mailHost: getEnvString('MAIL_HOST'),
-    mailPort: getEnvNumber('MAIL_PORT'),
-    mailSecure: getEnvBoolean('MAIL_SECURE'),
-    mailUsername: getEnvString('MAIL_USERNAME'),
-    mailPassword: getEnvString('MAIL_PASSWORD'),
 
     // Throttling
     emailVerificationThrottlingTime: getEnvNumber("EMAIL_VERIFICATION_THROTTLING_TIME", 60),

@@ -14,7 +14,7 @@ async function main() {
         loadEnvFile()
 
         const port = appConfig.port || 3000
-        const uri = `localhost:${port}`
+        const uri = `${appConfig.host}:${port}`
 
         // init db
         const dbModel = new DatabaseModels()
